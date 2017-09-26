@@ -116,7 +116,7 @@ int main() {
           double cte = polyeval(coeffs, 0);
           //double epsi = psi - atan(coeffs[1] + 2 * px * coeffs[2] + 3 * coeffs[3] * pow(px, 2));
           // we made psi = 0 and px = 0, so pse error simplifies to:
-          double epsi = -atan(coeffs[1]);
+          //double epsi = -atan(coeffs[1]);
 
           Eigen::VectorXd state(6);
           // initial state
@@ -151,7 +151,7 @@ int main() {
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
 
-          for (int i = 2; i < vars.size(); i++) {
+          for (size_t i = 2; i < vars.size(); i++) {
             if (i % 2 == 0) {
               mpc_x_vals.push_back(vars[i]);
             }
