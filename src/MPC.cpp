@@ -139,6 +139,9 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   //size_t i;
   typedef CPPAD_TESTVECTOR(double) Dvector;
 
+  // update timestep after each call of solve function
+  this->timestep += 1;
+
   double x = state[0];
   double y = state[1];
   double psi = state[2];

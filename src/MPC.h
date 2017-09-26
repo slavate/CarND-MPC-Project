@@ -15,6 +15,8 @@ class MPC {
   // Solve the model given an initial state and polynomial coefficients.
   // Return the first actuatotions.
   vector<double> Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs);
+  // timestep for tracking of calculations cycles
+  int timestep = 0;
 };
 
 #endif /* MPC_H */

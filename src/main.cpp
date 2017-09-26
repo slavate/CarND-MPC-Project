@@ -78,6 +78,14 @@ int main() {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
+    
+    // reset  simulator
+    if (mpc.timestep == 0) {
+      std::string reset_msg = "42[\"reset\",{}]";
+      ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
+    }
+
+    
     string sdata = string(data).substr(0, length);
     //cout << sdata << endl;
     if (sdata.size() > 2 && sdata[0] == '4' && sdata[1] == '2') {
@@ -96,7 +104,7 @@ int main() {
 
           // according to Self-Driving Car Project Q&A | MPC Controller, simplifies polynomial fit
           //https://youtu.be/bOQuhpz3YfU
-          for (int i = 0; i < ptsx.size(); i++) {
+          for (size_t i = 0; i < ptsx.size(); i++) {
             double shift_x = ptsx[i] - px;
             double shift_y = ptsy[i] - py;
 
