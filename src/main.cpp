@@ -85,6 +85,8 @@ int main() {
       ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
       cout << reset_msg << endl << endl;
     }
+
+    cout << endl << mpc.timestep << endl;
     
     string sdata = string(data).substr(0, length);
     //cout << sdata << endl;
@@ -148,7 +150,7 @@ int main() {
           throttle_value = vars[1];
 
           cout << "steer_value = " << steer_value << endl;
-          cout << "throttle_value = " << throttle_value << endl << endl;
+          cout << "throttle_value = " << throttle_value << endl;
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
