@@ -151,7 +151,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   double v = state[3];
   // cross track error
   double cte = state[4];
-  // orientation error
+  // orientation/heading error
   double epsi = state[5];
 
   // TODO: Set the number of model variables (includes both states and inputs).
@@ -183,10 +183,8 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // constrains for delta are set to -25 and 25 degrees, the same constrains as in simulator
   for (size_t i = delta_start; i < a_start; ++i) {
-    //vars_lowerbound[i] = -0.436332*Lf;
-    //vars_upperbound[i] = 0.436332*Lf;
-    vars_lowerbound[i] = -1.0;
-    vars_upperbound[i] = 1.0;
+    vars_lowerbound[i] = -0.436332*Lf;
+    vars_upperbound[i] = 0.436332*Lf;
   }
 
   // Acceleration/decceleration upper and lower limits.

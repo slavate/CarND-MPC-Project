@@ -125,11 +125,11 @@ int main() {
           double cte = polyeval(coeffs, 0);
           //double epsi = psi - atan(coeffs[1] + 2 * px * coeffs[2] + 3 * coeffs[3] * pow(px, 2));
           // we made psi = 0 and px = 0, so pse error simplifies to:
-          //double epsi = -atan(coeffs[1]);
+          double epsi = -atan(coeffs[1]);
 
           Eigen::VectorXd state(6);
           // initial state
-          state << 0, 0, 0, v, cte, psi;
+          state << 0, 0, 0, v, cte, epsi;
 
           /*
           * TODO: Calculate steering angle and throttle using MPC.
@@ -144,8 +144,8 @@ int main() {
           double steer_value = vars[0] / (deg2rad(25)*Lf);
           double throttle_value = vars[1];
 
-          cout << "steer_value = " << steer_value << endl;
-          cout << "throttle_value = " << throttle_value << endl << endl;
+          cout << "steer_value = " << vars[0] << endl;
+          cout << "throttle_value = " << vars[1] << endl << endl;
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
