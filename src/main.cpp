@@ -127,6 +127,9 @@ int main() {
           // we made psi = 0 and px = 0, so pse error simplifies to:
           double epsi = -atan(coeffs[1]);
 
+          double steer_value = j[1]["steering_angle"];
+          double throttle_value = j[1]["throttle"];
+
           Eigen::VectorXd state(6);
           // initial state
           state << 0, 0, 0, v, cte, epsi;
@@ -141,11 +144,11 @@ int main() {
           auto vars = mpc.Solve(state, coeffs);
 
           double Lf = 2.67;
-          double steer_value = vars[0] / (deg2rad(25)*Lf);
-          double throttle_value = vars[1];
+          steer_value = vars[0]/(deg2rad(25)*Lf);
+          throttle_value = vars[1];
 
-          cout << "steer_value = " << vars[0] << endl;
-          cout << "throttle_value = " << vars[1] << endl << endl;
+          cout << "steer_value = " << steer_value << endl;
+          cout << "throttle_value = " << throttle_value << endl << endl;
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.

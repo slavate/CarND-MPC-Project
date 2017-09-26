@@ -24,7 +24,7 @@ const double Lf = 2.67;
 
 double ref_cte = 0;
 double ref_epsi = 0;
-double ref_v = 100;
+double ref_v = 10;
 
 size_t x_start = 0;
 size_t y_start = x_start + N;
@@ -250,7 +250,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // Cost
   auto cost = solution.obj_value;
-  //std::cout << "Cost " << cost << std::endl;
+  std::cout << "Cost " << cost << std::endl;
 
   // TODO: Return the first actuator values. The variables can be accessed with
   // `solution.x[i]`.
