@@ -83,8 +83,8 @@ int main() {
     if (mpc.timestep == 0) {
       std::string reset_msg = "42[\"reset\",{}]";
       ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
+      cout << reset_msg << endl << endl;
     }
-
     
     string sdata = string(data).substr(0, length);
     //cout << sdata << endl;
@@ -104,12 +104,13 @@ int main() {
 
           // according to Self-Driving Car Project Q&A | MPC Controller, simplifies polynomial fit
           //https://youtu.be/bOQuhpz3YfU
-          for (size_t i = 0; i < ptsx.size(); i++) {
+          for (size_t i = 0; i < ptsx.size(); ++i) {
+            // shift car reference angle to 90 degrees
             double shift_x = ptsx[i] - px;
             double shift_y = ptsy[i] - py;
 
             ptsx[i] = (shift_x * cos(0 - psi) - shift_y*sin(0 - psi));
-            ptsy[i] = (shift_x * sin(0 - psi) - shift_y*cos(0 - psi));
+            ptsy[i] = (shift_x * sin(0 - psi) + shift_y*cos(0 - psi));
           }
 
           double* ptrx = &ptsx[0];
@@ -120,7 +121,7 @@ int main() {
 
           auto coeffs = polyfit(ptsx_transform, ptsy_transform, 3);
           
-          // calculate cte(cross track error) and epsi(orientation error)
+          // calculate cte(cross track error) and epsi(orientation/heading error)
           double cte = polyeval(coeffs, 0);
           //double epsi = psi - atan(coeffs[1] + 2 * px * coeffs[2] + 3 * coeffs[3] * pow(px, 2));
           // we made psi = 0 and px = 0, so pse error simplifies to:

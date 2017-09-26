@@ -16,7 +16,7 @@ class MPC {
   // Return the first actuatotions.
   vector<double> Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs);
   // timestep for tracking of calculations cycles
-  int timestep = 0;
+  int timestep;
 };
 
 #endif /* MPC_H */

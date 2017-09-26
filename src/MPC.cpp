@@ -59,12 +59,15 @@ class FG_eval {
       fg[0] += CppAD::pow(vars[v_start + i] - ref_v, 2);
     }
 
+    // A further enhancement is to constrain erratic control inputs.
     // Minimize the use of actuators.
     for (size_t i = 0; i < N - 1; ++i) {
       fg[0] += 5 * CppAD::pow(vars[delta_start + i], 2);
       fg[0] += 5 * CppAD::pow(vars[a_start + i], 2);
     }
 
+    // The goal of this final loop is to make control decisions more consistent, or smoother. 
+    // The next control input should be similar to the current one.
     // Minimize the value gap between sequential actuations.
     for (size_t i = 0; i < N - 2; ++i) {
       // 200 smoothes the steering angle
@@ -131,7 +134,7 @@ class FG_eval {
 //
 // MPC class definition implementation.
 //
-MPC::MPC() {}
+MPC::MPC() { this->timestep = 0;}
 MPC::~MPC() {}
 
 vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
@@ -163,7 +166,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // Initial value of the independent variables.
   // SHOULD BE 0 besides initial state.
   Dvector vars(n_vars);
-  for (size_t i = 0; i < n_vars; i++) {
+  for (size_t i = 0; i < n_vars; ++i) {
     vars[i] = 0;
   }
 
@@ -180,8 +183,10 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // constrains for delta are set to -25 and 25 degrees, the same constrains as in simulator
   for (size_t i = delta_start; i < a_start; ++i) {
-    vars_lowerbound[i] = -0.436332*Lf;
-    vars_upperbound[i] = 0.436332*Lf;
+    //vars_lowerbound[i] = -0.436332*Lf;
+    //vars_upperbound[i] = 0.436332*Lf;
+    vars_lowerbound[i] = -1.0;
+    vars_upperbound[i] = 1.0;
   }
 
   // Acceleration/decceleration upper and lower limits.
@@ -247,7 +252,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // Cost
   auto cost = solution.obj_value;
-  std::cout << "Cost " << cost << std::endl;
+  //std::cout << "Cost " << cost << std::endl;
 
   // TODO: Return the first actuator values. The variables can be accessed with
   // `solution.x[i]`.
