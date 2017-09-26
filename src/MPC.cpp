@@ -27,7 +27,7 @@ double ref_epsi = 0;
 double ref_v = 100;
 
 size_t x_start = 0;
-size_t y_start = 0;
+size_t y_start = x_start + N;
 size_t psi_start = y_start + N;
 size_t v_start = psi_start + N;
 size_t cte_start = v_start + N;
@@ -52,7 +52,7 @@ class FG_eval {
     fg[0] = 0;
 
     // The part of the cost based on the reference state.
-    for (int i = 0; i < N; ++i) {
+    for (size_t i = 0; i < N; ++i) {
       // coefficient 2000 is so high because we want the cte and epsi to be low
       fg[0] += 2000 * CppAD::pow(vars[cte_start + i] - ref_cte, 2);
       fg[0] += 2000 * CppAD::pow(vars[epsi_start + i] - ref_epsi, 2);
@@ -60,13 +60,13 @@ class FG_eval {
     }
 
     // Minimize the use of actuators.
-    for (int i = 0; i < N - 1; ++i) {
+    for (size_t i = 0; i < N - 1; ++i) {
       fg[0] += 5 * CppAD::pow(vars[delta_start + i], 2);
       fg[0] += 5 * CppAD::pow(vars[a_start + i], 2);
     }
 
     // Minimize the value gap between sequential actuations.
-    for (int i = 0; i < N - 2; ++i) {
+    for (size_t i = 0; i < N - 2; ++i) {
       // 200 smoothes the steering angle
       fg[0] += 200 * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
       fg[0] += 10 * CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
@@ -83,7 +83,7 @@ class FG_eval {
     fg[1 + cte_start] = vars[cte_start];
     fg[1 + epsi_start] = vars[epsi_start];
 
-    for (int t = 1; t < N; t++) {
+    for (size_t t = 1; t < N; ++t) {
       // The state at time t+1 .
       AD<double> x1 = vars[x_start + t];
       AD<double> y1 = vars[y_start + t];
@@ -160,7 +160,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // Initial value of the independent variables.
   // SHOULD BE 0 besides initial state.
   Dvector vars(n_vars);
-  for (int i = 0; i < n_vars; i++) {
+  for (size_t i = 0; i < n_vars; i++) {
     vars[i] = 0;
   }
 
@@ -170,19 +170,19 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   
   // Set all non-actuators upper and lower limits to the max negative and positive values
   // i.e. x, y, psi, v, cte, epsi
-  for (int i = 0; i < delta_start; ++i) {
+  for (size_t i = 0; i < delta_start; ++i) {
     vars_lowerbound[i] = -1.0e19;
     vars_upperbound[i] = 1.0e19;
   }
 
   // constrains for delta are set to -25 and 25 degrees, the same constrains as in simulator
-  for (int i = delta_start; i < a_start; ++i) {
+  for (size_t i = delta_start; i < a_start; ++i) {
     vars_lowerbound[i] = -0.436332*Lf;
     vars_upperbound[i] = 0.436332*Lf;
   }
 
   // Acceleration/decceleration upper and lower limits.
-  for (int i = a_start; i < n_vars; ++i) {
+  for (size_t i = a_start; i < n_vars; ++i) {
     vars_lowerbound[i] = -1.0;
     vars_upperbound[i] = 1.0;
   }
@@ -191,7 +191,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // Should be 0 besides initial state.
   Dvector constraints_lowerbound(n_constraints);
   Dvector constraints_upperbound(n_constraints);
-  for (int i = 0; i < n_constraints; ++i) {
+  for (size_t i = 0; i < n_constraints; ++i) {
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
   }
@@ -257,7 +257,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   result.push_back(solution.x[delta_start]);
   result.push_back(solution.x[a_start]);
 
-  for (int i = 0; i < N - 1; ++i) {
+  for (size_t i = 0; i < N - 1; ++i) {
     result.push_back(solution.x[x_start + i + 1]);
     result.push_back(solution.x[y_start + i + 1]);
   }
