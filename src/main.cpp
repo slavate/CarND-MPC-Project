@@ -103,6 +103,8 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          double mphInms = 0.44704;
+          v *= mphInms;
 
           // according to Self-Driving Car Project Q&A | MPC Controller, simplifies polynomial fit
           //https://youtu.be/bOQuhpz3YfU
