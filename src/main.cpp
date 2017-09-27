@@ -139,7 +139,8 @@ int main() {
           Eigen::VectorXd state(6);
           // initial state
           // TODO: include latency into the state
-          double sim_latency = 0.1; // simulator have 100 ms latency
+          //double sim_latency = 0.1; // simulator have 100 ms latency
+          double sim_latency = 0.0;
           px = v * sim_latency;
           /*double f0 = coeffs[0] + coeffs[1] * px + coeffs[2] * px*px + coeffs[3] * px*px*px;
           double psides0 = atan(coeffs[1] + 2 * coeffs[2] * px + 3 * coeffs[3] * px*px);
@@ -220,7 +221,7 @@ int main() {
           //
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
-          this_thread::sleep_for(chrono::milliseconds(100));
+          this_thread::sleep_for(chrono::milliseconds((int)(sim_latency * 1000)));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {
