@@ -134,11 +134,20 @@ int main() {
 
           double steer_value = j[1]["steering_angle"];
           double throttle_value = j[1]["throttle"];
+          double Lf = 2.67;
 
           Eigen::VectorXd state(6);
           // initial state
-          state << 0, 0, 0, v, cte, epsi;
           // TODO: include latency into the state
+          double sim_latency = 0.1; // simulator have 100 ms latency
+          px = v * sim_latency;
+          /*double f0 = coeffs[0] + coeffs[1] * px + coeffs[2] * px*px + coeffs[3] * px*px*px;
+          double psides0 = atan(coeffs[1] + 2 * coeffs[2] * px + 3 * coeffs[3] * px*px);
+          cte = f0 - py + v * sin(epsi) * sim_latency;
+          epsi = (0 - psides0) + v * steer_value / Lf * sim_latency;
+          psi = -v * steer_value / Lf * sim_latency;*/
+
+          state << px, 0, 0, v, cte, epsi;
 
           /*
           * TODO: Calculate steering angle and throttle using MPC.
@@ -149,7 +158,6 @@ int main() {
 
           auto vars = mpc.Solve(state, coeffs);
 
-          double Lf = 2.67;
           steer_value = vars[0]/(deg2rad(25)*Lf);
           throttle_value = vars[1];
 

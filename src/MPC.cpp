@@ -25,7 +25,7 @@ const double mphInms = 0.44704;
 
 double ref_cte = 0;
 double ref_epsi = 0;
-double ref_v = 10 * mphInms;
+double ref_v = 30 * mphInms;
 
 size_t x_start = 0;
 size_t y_start = x_start + N;
