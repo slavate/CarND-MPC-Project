@@ -121,6 +121,7 @@ int main() {
           double* ptry = &ptsy[0];
           Eigen::Map<Eigen::VectorXd> ptsy_transform(ptry, 6);
 
+          // third order polynomial fitting
           auto coeffs = polyfit(ptsx_transform, ptsy_transform, 3);
           
           // calculate cte(cross track error) and epsi(orientation/heading error)
@@ -135,6 +136,7 @@ int main() {
           Eigen::VectorXd state(6);
           // initial state
           state << 0, 0, 0, v, cte, epsi;
+          // TODO: include latency into the state
 
           /*
           * TODO: Calculate steering angle and throttle using MPC.
