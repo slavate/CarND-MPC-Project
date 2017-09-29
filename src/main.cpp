@@ -116,7 +116,6 @@ int main() {
             ptsx[i] = (shift_x * cos(0 - psi) - shift_y*sin(0 - psi));
             ptsy[i] = (shift_x * sin(0 - psi) + shift_y*cos(0 - psi));
           }
-
           double* ptrx = &ptsx[0];
           Eigen::Map<Eigen::VectorXd> ptsx_transform(ptrx, 6);
           
@@ -141,14 +140,15 @@ int main() {
           // TODO: include latency into the state
           //double sim_latency = 0.1; // simulator have 100 ms latency
           double sim_latency = 0.0;
-          px = v * sim_latency;
-          /*double f0 = coeffs[0] + coeffs[1] * px + coeffs[2] * px*px + coeffs[3] * px*px*px;
-          double psides0 = atan(coeffs[1] + 2 * coeffs[2] * px + 3 * coeffs[3] * px*px);
-          cte = f0 - py + v * sin(epsi) * sim_latency;
-          epsi = (0 - psides0) + v * steer_value / Lf * sim_latency;
-          psi = -v * steer_value / Lf * sim_latency;*/
+          cte = cte + v * sin(epsi) * sim_latency; // Lesson 18: Vehicle Model; Video 8: Errors  
+          epsi = epsi + v / Lf * steer_value * sim_latency; // Lesson 18: Vehicle Model; Video 8: Errors  
+          
+          px = v * sim_latency;// x = x + v * cos(psi) * dt
+          py = 0; // y = y + v * sin(psi) * dt
+          psi = -v / Lf * steer_value * sim_latency; // psi = psi + v/Lf * steer_value * dt
+          v = v + throttle_value * sim_latency; // v = v + a * dt
 
-          state << px, 0, 0, v, cte, epsi;
+          state << px, py, psi, v, cte, epsi;
 
           /*
           * TODO: Calculate steering angle and throttle using MPC.
