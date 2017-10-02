@@ -137,19 +137,6 @@ int main() {
 
           Eigen::VectorXd state(6);
           // initial state
-          // TODO: include latency into the state
-          // Lesson 19: Model Predictive Control, Chapter 7: Latency
-          // One approach would be running a simulation using the vehicle model starting from the current state for the duration of the latency
-          double sim_latency = 0.1; // simulator have 100 ms 
-
-          //cte = cte + v * sin(epsi) * sim_latency; // Lesson 18: Vehicle Model; Video 8: Errors  
-          //epsi = epsi + v / Lf * steer_value * sim_latency; // Lesson 18: Vehicle Model; Video 8: Errors  
-          //
-          //px = v * sim_latency;// x = x + v * cos(psi) * dt
-          //py = 0; // y = y + v * sin(psi) * dt
-          //psi = -v / Lf * steer_value * sim_latency; // psi = psi + v/Lf * steer_value * dt
-          //v = v + throttle_value * sim_latency; // v = v + a * dt
-
           state << 0, 0, 0, v, cte, epsi;
 
           /*

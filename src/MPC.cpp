@@ -55,9 +55,9 @@ class FG_eval {
     // The part of the cost based on the reference state.
     for (size_t i = 0; i < N; ++i) {
       // coefficient 2000 is so high because we want the cte and epsi to be low
-      fg[0] += 10 * CppAD::pow(vars[cte_start + i] - ref_cte, 2);
-      fg[0] += 10 * CppAD::pow(vars[epsi_start + i] - ref_epsi, 2);
-      fg[0] += CppAD::pow((vars[v_start + i] - ref_v) / ref_v * 6, 2);
+      fg[0] += 2000 * CppAD::pow(vars[cte_start + i] - ref_cte, 2);
+      fg[0] += 2000 * CppAD::pow(vars[epsi_start + i] - ref_epsi, 2);
+      fg[0] += CppAD::pow(vars[v_start + i] - ref_v, 2);
     }
 
     // A further enhancement is to constrain erratic control inputs.
@@ -65,6 +65,8 @@ class FG_eval {
     for (size_t i = 0; i < N - 1; ++i) {
       fg[0] += 5 * CppAD::pow(vars[delta_start + i], 2);
       fg[0] += 5 * CppAD::pow(vars[a_start + i], 2);
+      // penalize high velocity with steering
+      fg[0] += 1000 * CppAD::pow(vars[delta_start + i] * vars[a_start + i], 2);
     }
 
     // The goal of this final loop is to make control decisions more consistent, or smoother. 
@@ -72,8 +74,8 @@ class FG_eval {
     // Minimize the value gap between sequential actuations.
     for (size_t i = 0; i < N - 2; ++i) {
       // 200 smoothes the steering angle
-      fg[0] += 100 * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
-      fg[0] += CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
+      fg[0] += 200 * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+      fg[0] += 10  * CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
     }
 
     //Initialization & constraints
@@ -103,11 +105,16 @@ class FG_eval {
       AD<double> v0 = vars[v_start + t - 1];
       AD<double> cte0 = vars[cte_start + t - 1];
       AD<double> epsi0 = vars[epsi_start + t - 1];
-
-      // Only consider the actuation at time t.
       AD<double> delta0 = vars[delta_start + t - 1];
       AD<double> a0 = vars[a_start + t - 1];
 
+      // Only consider the actuation at time t.
+      // -2 because we have a latency of 0.1 seconds, so use previous 
+      if (t > 1) {   
+        delta0 = vars[delta_start + t - 2];
+        a0 = vars[a_start + t - 2];
+      }
+      
       AD<double> f0 = coeffs[0] + coeffs[1] * x0 + coeffs[2] * x0 * x0 + coeffs[3] * x0 * x0 * x0;
       // desired psi
       AD<double> psides0 = CppAD::atan(coeffs[1] + 2 * coeffs[2] * x0 + 3 * coeffs[3] * x0 * x0);
@@ -125,8 +132,8 @@ class FG_eval {
       fg[1 + x_start + t] = x1 - (x0 + v0 * CppAD::cos(psi0) * dt);
       fg[1 + y_start + t] = y1 - (y0 + v0 * CppAD::sin(psi0) * dt);
       // signed changed because of simulator
-      fg[1 + psi_start + t] = psi1 - (psi0 - v0 * delta0 / Lf * (dt + 0.1));
-      fg[1 + v_start + t] = v1 - (v0 + a0 * (dt + 0.1));
+      fg[1 + psi_start + t] = psi1 - (psi0 - v0 * delta0 / Lf * dt);
+      fg[1 + v_start + t] = v1 - (v0 + a0 * dt);
       fg[1 + cte_start + t] = cte1 - ((f0 - y0) + (v0 * CppAD::sin(epsi0) * dt));
       fg[1 + epsi_start + t] = epsi1 - ((psi0 - psides0) + v0 * delta0 / Lf * dt);
     }
