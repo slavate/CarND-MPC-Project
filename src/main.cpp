@@ -104,22 +104,25 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
           double mphInms = 0.44704;
-          v *= mphInms;
+          //v *= mphInms;
 
           // according to Self-Driving Car Project Q&A | MPC Controller, simplifies polynomial fit
           //https://youtu.be/bOQuhpz3YfU
+          vector<double> shift_ptsx;
+          vector<double> shift_ptsy;
           for (size_t i = 0; i < ptsx.size(); ++i) {
             // shift car reference angle to 90 degrees
             double shift_x = ptsx[i] - px;
             double shift_y = ptsy[i] - py;
 
-            ptsx[i] = (shift_x * cos(0 - psi) - shift_y*sin(0 - psi));
-            ptsy[i] = (shift_x * sin(0 - psi) + shift_y*cos(0 - psi));
+            shift_ptsx.push_back((shift_x * cos(0 - psi) - shift_y*sin(0 - psi)));
+            shift_ptsy.push_back((shift_x * sin(0 - psi) + shift_y*cos(0 - psi)));
           }
-          double* ptrx = &ptsx[0];
+
+          double* ptrx = &shift_ptsx[0];
           Eigen::Map<Eigen::VectorXd> ptsx_transform(ptrx, 6);
           
-          double* ptry = &ptsy[0];
+          double* ptry = &shift_ptsy[0];
           Eigen::Map<Eigen::VectorXd> ptsy_transform(ptry, 6);
 
           // third order polynomial fitting
@@ -136,6 +139,14 @@ int main() {
           double Lf = 2.67;
 
           Eigen::VectorXd state(6);
+          double sim_latency = 0.1;
+          //px = px + v * cos(psi) * sim_latency;
+          //py = py + v * sin(psi) * sim_latency;
+          //psi = psi - v * steer_value / Lf * sim_latency;
+          //v = v + throttle_value * sim_latency;
+          //cte = cte + (v * sin(epsi) * sim_latency);
+          //epsi = epsi + v * steer_value / Lf * sim_latency;
+
           // initial state
           state << 0, 0, 0, v, cte, epsi;
 
@@ -210,7 +221,7 @@ int main() {
           //
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
-          this_thread::sleep_for(chrono::milliseconds((int)(sim_latency * 1000)));
+          this_thread::sleep_for(chrono::milliseconds((int)(100)));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {
