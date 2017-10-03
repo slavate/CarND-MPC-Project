@@ -27,7 +27,7 @@ Update equations:
       cte[t] = f(x[t-1]) - y[t-1] + v[t-1] * sin(epsi[t-1]) * dt
       epsi[t] = psi[t] - psides[t-1] + v[t-1] * delta[t-1] / Lf * dt
 
-Here we simplify that actuator throttle value in range from -1 to 1 is acceleration which will be used in the above update equations.
+Here we simplify that actuator throttle value in range from -1 to 1 is acceleration which will be used in the above update equation for velocity.
 
 As proposed in Q&A Video I also shifting vehicle reference point to `0,0` and orientation `0` - see lines 110 - 120 in main.cpp.
 
@@ -41,6 +41,6 @@ At first I used proposed values in the Q&A video, i.e. `N = 10` and `dt = 0.1`. 
 All of them are failed, I believe because weights for cost function components which I defined (tuned) manually are good only for `N = 10` and `dt = 0.1`.
 
 ## Cost function
-Additionally to proposed elements in Q&A/Class for the cost function, I added element which penalizes high velocity with high steering angle, see line 69 in MPC.cpp. All the coefficients where tuned manually based on the suggestions from class. I believe/hope there is way to tune them automatically. Why not use them as input parameters for ipopt?
+Additionally to proposed elements in Q&A/Class for the cost function, I added element which penalizes high velocity with high steering angle, see line 69 in MPC.cpp. All the coefficients where tuned manually based on the suggestions from class. I believe/hope there is way to tune them automatically. Why not to use them as input parameters for ipopt?
 
 
