@@ -41,6 +41,6 @@ At first I used proposed values in the Q&A video, i.e. `N = 10` and `dt = 0.1`. 
 All of them are failed, I believe because weights for cost function components which I defined (tuned) manually are good only for `N = 10` and `dt = 0.1`.
 
 ## Cost function
-Additionally to proposed elements in Q&A/Class for the cost function, I added element which penalizes high velocity with high steering angle, see line 69 in MPC.cpp. All the coefficients where tuned manually based on the suggestions from class. I believe/hope there is way to tune them automatically. Why not use them as input parameter for ipopt?
+Additionally to proposed elements in Q&A/Class for the cost function, I added element which penalizes high velocity with high steering angle, see line 69 in MPC.cpp. All the coefficients where tuned manually based on the suggestions from class. I believe/hope there is way to tune them automatically. Why not use them as input parameters for ipopt?
 
 
