@@ -25,7 +25,7 @@ const double mphInms = 0.44704;
 
 double ref_cte = 0;
 double ref_epsi = 0;
-double ref_v = 60;
+double ref_v = 100;
 
 size_t x_start = 0;
 size_t y_start = x_start + N;
@@ -55,18 +55,18 @@ class FG_eval {
     // The part of the cost based on the reference state.
     for (size_t i = 0; i < N; ++i) {
       // coefficient 2000 is so high because we want the cte and epsi to be low
-      fg[0] += 2000 * CppAD::pow(vars[cte_start + i] - ref_cte, 2);
-      fg[0] += 2000 * CppAD::pow(vars[epsi_start + i] - ref_epsi, 2);
-      fg[0] += CppAD::pow(vars[v_start + i] - ref_v, 2);
+      fg[0] += 10 * CppAD::pow(vars[cte_start + i] - ref_cte, 2);
+      fg[0] += 10 * CppAD::pow(vars[epsi_start + i] - ref_epsi, 2);
+      fg[0] += CppAD::pow((vars[v_start + i] - ref_v) / ref_v, 2);
     }
 
     // A further enhancement is to constrain erratic control inputs.
     // Minimize the use of actuators.
     for (size_t i = 0; i < N - 1; ++i) {
-      fg[0] += 5 * CppAD::pow(vars[delta_start + i], 2);
-      fg[0] += 5 * CppAD::pow(vars[a_start + i], 2);
+      //fg[0] += 5 * CppAD::pow(vars[delta_start + i], 2);
+      //fg[0] += 5 * CppAD::pow(vars[a_start + i], 2);
       // penalize high velocity with steering
-      fg[0] += 1000 * CppAD::pow(vars[delta_start + i] * vars[v_start + i], 2);
+      fg[0] += CppAD::pow(vars[delta_start + i] * vars[v_start + i], 2);
     }
 
     // The goal of this final loop is to make control decisions more consistent, or smoother. 
@@ -74,8 +74,8 @@ class FG_eval {
     // Minimize the value gap between sequential actuations.
     for (size_t i = 0; i < N - 2; ++i) {
       // 200 smoothes the steering angle
-      fg[0] += 200 * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
-      fg[0] += 10  * CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
+      //fg[0] += 20 * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+      //fg[0] += 10  * CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
     }
 
     //Initialization & constraints

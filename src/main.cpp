@@ -162,6 +162,9 @@ int main() {
           steer_value = vars[0]/(deg2rad(25)*Lf);
           throttle_value = vars[1];
 
+          cout << "cte = " << cte << endl;
+          cout << "epsi = " << epsi << endl;
+          cout << "v = " << v << endl;
           cout << "steer_value = " << steer_value << endl;
           cout << "throttle_value = " << throttle_value << endl;
 
